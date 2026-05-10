@@ -1,0 +1,8 @@
+OPENAI_API_KEY
+.env
+__pycache__/
+*.pyc
+knowledge_base/chroma_db/
+data/last_run_results.json
+data/query_audit_log.jsonl
+data/observability_log.jsonl
