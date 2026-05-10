@@ -1,0 +1,280 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1100" font-family="Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#334155"/>
+    </marker>
+    <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#b91c1c"/>
+    </marker>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#1d4ed8"/>
+    </marker>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#e2e8f0"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1600" height="1100" fill="url(#bgGrad)"/>
+
+  <!-- Title block -->
+  <rect x="20" y="20" width="1560" height="60" rx="8" fill="#0f172a"/>
+  <text x="800" y="50" text-anchor="middle" font-size="22" font-weight="bold" fill="#ffffff">Enterprise Knowledge Research Agent — System Architecture</text>
+  <text x="800" y="70" text-anchor="middle" font-size="13" fill="#cbd5e1">14-Agent Multi-Agent System | AV/OT Cybersecurity Domain | LangChain + ChromaDB + n8n + FastAPI</text>
+
+  <!-- LAYER 1: CLIENT / EDGE -->
+  <rect x="20" y="100" width="1560" height="90" rx="8" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1.5"/>
+  <text x="40" y="125" font-size="14" font-weight="bold" fill="#1e3a8a">LAYER 1 — CLIENT / EDGE</text>
+
+  <rect x="60" y="135" width="160" height="45" rx="6" fill="#ffffff" stroke="#1d4ed8"/>
+  <text x="140" y="155" text-anchor="middle" font-size="12" font-weight="bold" fill="#1e3a8a">Analyst UI</text>
+  <text x="140" y="172" text-anchor="middle" font-size="10" fill="#475569">Streamlit Dashboard</text>
+
+  <rect x="250" y="135" width="160" height="45" rx="6" fill="#ffffff" stroke="#1d4ed8"/>
+  <text x="330" y="155" text-anchor="middle" font-size="12" font-weight="bold" fill="#1e3a8a">REST Client</text>
+  <text x="330" y="172" text-anchor="middle" font-size="10" fill="#475569">API Consumer</text>
+
+  <rect x="440" y="135" width="160" height="45" rx="6" fill="#ffffff" stroke="#1d4ed8"/>
+  <text x="520" y="155" text-anchor="middle" font-size="12" font-weight="bold" fill="#1e3a8a">n8n Webhook</text>
+  <text x="520" y="172" text-anchor="middle" font-size="10" fill="#475569">External Trigger</text>
+
+  <rect x="900" y="135" width="220" height="45" rx="6" fill="#fef3c7" stroke="#b45309"/>
+  <text x="1010" y="155" text-anchor="middle" font-size="12" font-weight="bold" fill="#78350f">Role-Based Access Control</text>
+  <text x="1010" y="172" text-anchor="middle" font-size="10" fill="#78350f">ANALYST / ENGINEER / EXECUTIVE</text>
+
+  <rect x="1140" y="135" width="200" height="45" rx="6" fill="#fef3c7" stroke="#b45309"/>
+  <text x="1240" y="155" text-anchor="middle" font-size="12" font-weight="bold" fill="#78350f">API Key Auth</text>
+  <text x="1240" y="172" text-anchor="middle" font-size="10" fill="#78350f">HMAC + Bearer Token</text>
+
+  <rect x="1360" y="135" width="200" height="45" rx="6" fill="#fef3c7" stroke="#b45309"/>
+  <text x="1460" y="155" text-anchor="middle" font-size="12" font-weight="bold" fill="#78350f">Rate Limiter</text>
+  <text x="1460" y="172" text-anchor="middle" font-size="10" fill="#78350f">10 req/min per key</text>
+
+  <!-- LAYER 2: API GATEWAY -->
+  <rect x="20" y="210" width="1560" height="80" rx="8" fill="#dcfce7" stroke="#15803d" stroke-width="1.5"/>
+  <text x="40" y="235" font-size="14" font-weight="bold" fill="#14532d">LAYER 2 — FASTAPI GATEWAY (Input Validation, Auth, Prompt Injection Filter)</text>
+
+  <rect x="60" y="245" width="200" height="35" rx="6" fill="#ffffff" stroke="#15803d"/>
+  <text x="160" y="267" text-anchor="middle" font-size="11" fill="#14532d">Prompt Injection Filter</text>
+
+  <rect x="280" y="245" width="200" height="35" rx="6" fill="#ffffff" stroke="#15803d"/>
+  <text x="380" y="267" text-anchor="middle" font-size="11" fill="#14532d">Input Sanitization</text>
+
+  <rect x="500" y="245" width="200" height="35" rx="6" fill="#ffffff" stroke="#15803d"/>
+  <text x="600" y="267" text-anchor="middle" font-size="11" fill="#14532d">Query Length / Schema Validation</text>
+
+  <rect x="720" y="245" width="200" height="35" rx="6" fill="#ffffff" stroke="#15803d"/>
+  <text x="820" y="267" text-anchor="middle" font-size="11" fill="#14532d">Sensitivity Pre-Check</text>
+
+  <rect x="940" y="245" width="200" height="35" rx="6" fill="#ffffff" stroke="#15803d"/>
+  <text x="1040" y="267" text-anchor="middle" font-size="11" fill="#14532d">Trace ID Assignment</text>
+
+  <rect x="1160" y="245" width="200" height="35" rx="6" fill="#ffffff" stroke="#15803d"/>
+  <text x="1260" y="267" text-anchor="middle" font-size="11" fill="#14532d">Output Filter / Redaction</text>
+
+  <rect x="1380" y="245" width="180" height="35" rx="6" fill="#ffffff" stroke="#15803d"/>
+  <text x="1470" y="267" text-anchor="middle" font-size="11" fill="#14532d">Audit Hook</text>
+
+  <!-- LAYER 3: ORCHESTRATOR + 14 AGENTS -->
+  <rect x="20" y="310" width="1100" height="490" rx="8" fill="#ede9fe" stroke="#6d28d9" stroke-width="1.5"/>
+  <text x="40" y="335" font-size="14" font-weight="bold" fill="#4c1d95">LAYER 3 — ORCHESTRATOR + 14-AGENT PIPELINE</text>
+
+  <!-- Orchestrator central -->
+  <rect x="450" y="350" width="240" height="50" rx="6" fill="#6d28d9" stroke="#4c1d95" stroke-width="2"/>
+  <text x="570" y="372" text-anchor="middle" font-size="13" font-weight="bold" fill="#ffffff">orchestrator.py</text>
+  <text x="570" y="390" text-anchor="middle" font-size="11" fill="#e9d5ff">Sequential + Conditional Routing</text>
+
+  <!-- Row 1: Classification + Planning -->
+  <rect x="50" y="430" width="170" height="60" rx="6" fill="#ffffff" stroke="#6d28d9"/>
+  <text x="135" y="450" text-anchor="middle" font-size="11" font-weight="bold" fill="#4c1d95">1. QueryClassifier</text>
+  <text x="135" y="465" text-anchor="middle" font-size="9" fill="#475569">Category + sensitivity</text>
+  <text x="135" y="478" text-anchor="middle" font-size="9" fill="#475569">→ routes downstream agents</text>
+
+  <rect x="240" y="430" width="170" height="60" rx="6" fill="#ffffff" stroke="#6d28d9"/>
+  <text x="325" y="450" text-anchor="middle" font-size="11" font-weight="bold" fill="#4c1d95">2. Planner</text>
+  <text x="325" y="465" text-anchor="middle" font-size="9" fill="#475569">Decomposes query into</text>
+  <text x="325" y="478" text-anchor="middle" font-size="9" fill="#475569">N executable steps</text>
+
+  <!-- Row 2: Retrieval cluster -->
+  <rect x="50" y="510" width="170" height="60" rx="6" fill="#ffffff" stroke="#6d28d9"/>
+  <text x="135" y="530" text-anchor="middle" font-size="11" font-weight="bold" fill="#4c1d95">3. Retriever</text>
+  <text x="135" y="545" text-anchor="middle" font-size="9" fill="#475569">RAG over ChromaDB</text>
+  <text x="135" y="558" text-anchor="middle" font-size="9" fill="#475569">Role-filtered corpus</text>
+
+  <rect x="240" y="510" width="170" height="60" rx="6" fill="#ffffff" stroke="#6d28d9"/>
+  <text x="325" y="530" text-anchor="middle" font-size="11" font-weight="bold" fill="#4c1d95">4. WebSearch</text>
+  <text x="325" y="545" text-anchor="middle" font-size="9" fill="#475569">External tool calling:</text>
+  <text x="325" y="558" text-anchor="middle" font-size="9" fill="#475569">SerpAPI / direct fetch</text>
+
+  <rect x="430" y="510" width="170" height="60" rx="6" fill="#ffffff" stroke="#6d28d9"/>
+  <text x="515" y="530" text-anchor="middle" font-size="11" font-weight="bold" fill="#4c1d95">5. ThreatIntel</text>
+  <text x="515" y="545" text-anchor="middle" font-size="9" fill="#475569">External tool calling:</text>
+  <text x="515" y="558" text-anchor="middle" font-size="9" fill="#475569">NVD CVE + MITRE ATT&amp;CK</text>
+
+  <rect x="620" y="510" width="170" height="60" rx="6" fill="#ffffff" stroke="#6d28d9"/>
+  <text x="705" y="530" text-anchor="middle" font-size="11" font-weight="bold" fill="#4c1d95">6. GapDetection</text>
+  <text x="705" y="545" text-anchor="middle" font-size="9" fill="#475569">Identifies what corpus</text>
+  <text x="705" y="558" text-anchor="middle" font-size="9" fill="#475569">does NOT contain</text>
+
+  <!-- Row 3: Framework + Compliance + Citation -->
+  <rect x="50" y="590" width="170" height="60" rx="6" fill="#ffffff" stroke="#6d28d9"/>
+  <text x="135" y="610" text-anchor="middle" font-size="11" font-weight="bold" fill="#4c1d95">7. CybersecFramework</text>
+  <text x="135" y="625" text-anchor="middle" font-size="9" fill="#475569">NIST CSF 2.0 +</text>
+  <text x="135" y="638" text-anchor="middle" font-size="9" fill="#475569">MITRE ATT&amp;CK for ICS</text>
+
+  <rect x="240" y="590" width="170" height="60" rx="6" fill="#ffffff" stroke="#6d28d9"/>
+  <text x="325" y="610" text-anchor="middle" font-size="11" font-weight="bold" fill="#4c1d95">8. Compliance</text>
+  <text x="325" y="625" text-anchor="middle" font-size="9" fill="#475569">ISO 21434, UNECE</text>
+  <text x="325" y="638" text-anchor="middle" font-size="9" fill="#475569">WP.29, NIST SP 800-82</text>
+
+  <rect x="430" y="590" width="170" height="60" rx="6" fill="#ffffff" stroke="#6d28d9"/>
+  <text x="515" y="610" text-anchor="middle" font-size="11" font-weight="bold" fill="#4c1d95">9. Citation</text>
+  <text x="515" y="625" text-anchor="middle" font-size="9" fill="#475569">Traces every claim</text>
+  <text x="515" y="638" text-anchor="middle" font-size="9" fill="#475569">back to source DOC IDs</text>
+
+  <rect x="620" y="590" width="170" height="60" rx="6" fill="#ffffff" stroke="#6d28d9"/>
+  <text x="705" y="610" text-anchor="middle" font-size="11" font-weight="bold" fill="#4c1d95">10. Synthesizer</text>
+  <text x="705" y="625" text-anchor="middle" font-size="9" fill="#475569">Structured response</text>
+  <text x="705" y="638" text-anchor="middle" font-size="9" fill="#475569">with executive summary</text>
+
+  <!-- Row 4: Evaluation + Observability -->
+  <rect x="50" y="670" width="170" height="60" rx="6" fill="#fce7f3" stroke="#9d174d"/>
+  <text x="135" y="690" text-anchor="middle" font-size="11" font-weight="bold" fill="#9d174d">11. Evaluation</text>
+  <text x="135" y="705" text-anchor="middle" font-size="9" fill="#475569">LLM-as-judge: relevance,</text>
+  <text x="135" y="718" text-anchor="middle" font-size="9" fill="#475569">grounding, hallucination risk</text>
+
+  <rect x="240" y="670" width="170" height="60" rx="6" fill="#fce7f3" stroke="#9d174d"/>
+  <text x="325" y="690" text-anchor="middle" font-size="11" font-weight="bold" fill="#9d174d">12. ConfidenceTracker</text>
+  <text x="325" y="705" text-anchor="middle" font-size="9" fill="#475569">Aggregates per-agent</text>
+  <text x="325" y="718" text-anchor="middle" font-size="9" fill="#475569">scores → block / escalate</text>
+
+  <rect x="430" y="670" width="170" height="60" rx="6" fill="#fce7f3" stroke="#9d174d"/>
+  <text x="515" y="690" text-anchor="middle" font-size="11" font-weight="bold" fill="#9d174d">13. Observability</text>
+  <text x="515" y="705" text-anchor="middle" font-size="9" fill="#475569">Latency, cost, token usage,</text>
+  <text x="515" y="718" text-anchor="middle" font-size="9" fill="#475569">drift anomaly detection</text>
+
+  <rect x="620" y="670" width="170" height="60" rx="6" fill="#fce7f3" stroke="#9d174d"/>
+  <text x="705" y="690" text-anchor="middle" font-size="11" font-weight="bold" fill="#9d174d">14. QueryAudit</text>
+  <text x="705" y="705" text-anchor="middle" font-size="9" fill="#475569">Immutable audit log,</text>
+  <text x="705" y="718" text-anchor="middle" font-size="9" fill="#475569">policy violation flags</text>
+
+  <!-- Conditional review -->
+  <rect x="850" y="430" width="240" height="80" rx="6" fill="#fee2e2" stroke="#b91c1c" stroke-width="2"/>
+  <text x="970" y="455" text-anchor="middle" font-size="12" font-weight="bold" fill="#7f1d1d">Human-in-the-Loop Router</text>
+  <text x="970" y="475" text-anchor="middle" font-size="10" fill="#7f1d1d">IF eval FAIL OR confidence &lt; 0.60</text>
+  <text x="970" y="490" text-anchor="middle" font-size="10" fill="#7f1d1d">→ escalate to human reviewer</text>
+  <text x="970" y="503" text-anchor="middle" font-size="10" fill="#7f1d1d">ELSE → deliver response</text>
+
+  <!-- Output -->
+  <rect x="850" y="540" width="240" height="80" rx="6" fill="#dcfce7" stroke="#15803d" stroke-width="2"/>
+  <text x="970" y="565" text-anchor="middle" font-size="12" font-weight="bold" fill="#14532d">Structured Response</text>
+  <text x="970" y="585" text-anchor="middle" font-size="10" fill="#14532d">Executive summary + insights</text>
+  <text x="970" y="600" text-anchor="middle" font-size="10" fill="#14532d">+ citations + action items</text>
+  <text x="970" y="615" text-anchor="middle" font-size="10" fill="#14532d">+ confidence score</text>
+
+  <!-- Pipeline metrics -->
+  <rect x="850" y="650" width="240" height="80" rx="6" fill="#f1f5f9" stroke="#475569"/>
+  <text x="970" y="675" text-anchor="middle" font-size="12" font-weight="bold" fill="#1e293b">Pipeline Metrics (Live)</text>
+  <text x="970" y="695" text-anchor="middle" font-size="10" fill="#334155">14 agents | $0.015/run</text>
+  <text x="970" y="710" text-anchor="middle" font-size="10" fill="#334155">47s p50 | 85% citation coverage</text>
+  <text x="970" y="725" text-anchor="middle" font-size="10" fill="#334155">Confidence 0.65–0.97</text>
+
+  <!-- Orchestrator → agents arrows (light) -->
+  <line x1="570" y1="400" x2="135" y2="430" stroke="#a78bfa" stroke-width="1" stroke-dasharray="3,3"/>
+  <line x1="570" y1="400" x2="325" y2="430" stroke="#a78bfa" stroke-width="1" stroke-dasharray="3,3"/>
+  <line x1="570" y1="400" x2="970" y2="430" stroke="#a78bfa" stroke-width="1" stroke-dasharray="3,3"/>
+
+  <!-- LAYER 4: DATA + KNOWLEDGE -->
+  <rect x="1140" y="310" width="440" height="240" rx="8" fill="#fef3c7" stroke="#b45309" stroke-width="1.5"/>
+  <text x="1160" y="335" font-size="14" font-weight="bold" fill="#78350f">LAYER 4 — DATA &amp; KNOWLEDGE</text>
+
+  <rect x="1160" y="350" width="180" height="60" rx="6" fill="#ffffff" stroke="#b45309"/>
+  <text x="1250" y="370" text-anchor="middle" font-size="11" font-weight="bold" fill="#78350f">ChromaDB</text>
+  <text x="1250" y="385" text-anchor="middle" font-size="9" fill="#475569">Vector store</text>
+  <text x="1250" y="398" text-anchor="middle" font-size="9" fill="#475569">text-embedding-3-small</text>
+
+  <rect x="1370" y="350" width="190" height="60" rx="6" fill="#ffffff" stroke="#b45309"/>
+  <text x="1465" y="370" text-anchor="middle" font-size="11" font-weight="bold" fill="#78350f">Corpus (10 docs)</text>
+  <text x="1465" y="385" text-anchor="middle" font-size="9" fill="#475569">AV/OT cybersecurity</text>
+  <text x="1465" y="398" text-anchor="middle" font-size="9" fill="#475569">3 sensitivity tiers</text>
+
+  <rect x="1160" y="425" width="180" height="55" rx="6" fill="#ffffff" stroke="#b45309"/>
+  <text x="1250" y="445" text-anchor="middle" font-size="11" font-weight="bold" fill="#78350f">Audit Log</text>
+  <text x="1250" y="462" text-anchor="middle" font-size="9" fill="#475569">JSONL append-only</text>
+
+  <rect x="1370" y="425" width="190" height="55" rx="6" fill="#ffffff" stroke="#b45309"/>
+  <text x="1465" y="445" text-anchor="middle" font-size="11" font-weight="bold" fill="#78350f">Observability Log</text>
+  <text x="1465" y="462" text-anchor="middle" font-size="9" fill="#475569">Per-run metrics</text>
+
+  <rect x="1160" y="495" width="400" height="50" rx="6" fill="#ffffff" stroke="#b45309"/>
+  <text x="1360" y="513" text-anchor="middle" font-size="11" font-weight="bold" fill="#78350f">Golden Dataset (20 scenarios across 5 categories)</text>
+  <text x="1360" y="530" text-anchor="middle" font-size="9" fill="#475569">Used by EvaluationAgent and ObservabilityAgent for drift detection</text>
+
+  <!-- LAYER 5: EXTERNAL TOOLS -->
+  <rect x="1140" y="560" width="440" height="240" rx="8" fill="#e0f2fe" stroke="#0369a1" stroke-width="1.5"/>
+  <text x="1160" y="585" font-size="14" font-weight="bold" fill="#0c4a6e">LAYER 5 — EXTERNAL TOOL CALLING</text>
+
+  <rect x="1160" y="600" width="180" height="55" rx="6" fill="#ffffff" stroke="#0369a1"/>
+  <text x="1250" y="620" text-anchor="middle" font-size="11" font-weight="bold" fill="#0c4a6e">NIST NVD API</text>
+  <text x="1250" y="637" text-anchor="middle" font-size="9" fill="#475569">CVE lookup, CVSS scoring</text>
+
+  <rect x="1370" y="600" width="190" height="55" rx="6" fill="#ffffff" stroke="#0369a1"/>
+  <text x="1465" y="620" text-anchor="middle" font-size="11" font-weight="bold" fill="#0c4a6e">CISA ICS-CERT</text>
+  <text x="1465" y="637" text-anchor="middle" font-size="9" fill="#475569">Advisory feed</text>
+
+  <rect x="1160" y="670" width="180" height="55" rx="6" fill="#ffffff" stroke="#0369a1"/>
+  <text x="1250" y="690" text-anchor="middle" font-size="11" font-weight="bold" fill="#0c4a6e">SerpAPI</text>
+  <text x="1250" y="707" text-anchor="middle" font-size="9" fill="#475569">Web search fallback</text>
+
+  <rect x="1370" y="670" width="190" height="55" rx="6" fill="#ffffff" stroke="#0369a1"/>
+  <text x="1465" y="690" text-anchor="middle" font-size="11" font-weight="bold" fill="#0c4a6e">MITRE ATT&amp;CK API</text>
+  <text x="1465" y="707" text-anchor="middle" font-size="9" fill="#475569">TTP/technique mapping</text>
+
+  <rect x="1160" y="740" width="400" height="50" rx="6" fill="#ffffff" stroke="#0369a1"/>
+  <text x="1360" y="758" text-anchor="middle" font-size="11" font-weight="bold" fill="#0c4a6e">LangSmith Tracing</text>
+  <text x="1360" y="775" text-anchor="middle" font-size="9" fill="#475569">Per-agent trace, latency, cost, prompt/response capture</text>
+
+  <!-- LAYER 6: N8N WORKFLOWS -->
+  <rect x="20" y="820" width="1560" height="240" rx="8" fill="#fdf4ff" stroke="#86198f" stroke-width="1.5"/>
+  <text x="40" y="845" font-size="14" font-weight="bold" fill="#581c87">LAYER 6 — N8N WORKFLOWS (External Orchestration, External Tool Calling, Observability)</text>
+
+  <!-- Workflow 1 -->
+  <rect x="60" y="860" width="730" height="180" rx="6" fill="#ffffff" stroke="#86198f"/>
+  <text x="425" y="880" text-anchor="middle" font-size="12" font-weight="bold" fill="#581c87">Workflow 1 — Enterprise Research Pipeline (16 nodes)</text>
+
+  <text x="80" y="905" font-size="9" fill="#475569">1. Webhook  →  2. HMAC verify  →  3. API key auth  →  4. Rate limiter  →  5. Prompt-injection filter</text>
+  <text x="80" y="925" font-size="9" fill="#475569">6. Query classifier (LLM)  →  7. Parallel split  →  8. RAG retrieve  +  9. NVD CVE call  +  10. CISA advisory call</text>
+  <text x="80" y="945" font-size="9" fill="#475569">11. Merge  →  12. MITRE ATT&amp;CK mapper  →  13. Compliance mapper  →  14. Synthesizer (LLM w/ tools)</text>
+  <text x="80" y="965" font-size="9" fill="#475569">15. LLM-as-judge evaluator  →  16. Conditional router (PASS → respond, FAIL → human queue + audit)</text>
+
+  <rect x="80" y="985" width="690" height="45" rx="4" fill="#fef3c7" stroke="#b45309"/>
+  <text x="425" y="1003" text-anchor="middle" font-size="10" font-weight="bold" fill="#78350f">Cybersecurity Hardening</text>
+  <text x="425" y="1018" text-anchor="middle" font-size="9" fill="#78350f">HMAC + API key + rate limit + prompt-injection filter + output redaction + immutable audit + LangSmith trace push</text>
+
+  <!-- Workflow 2 -->
+  <rect x="810" y="860" width="730" height="180" rx="6" fill="#ffffff" stroke="#86198f"/>
+  <text x="1175" y="880" text-anchor="middle" font-size="12" font-weight="bold" fill="#581c87">Workflow 2 — Autonomous Threat Surveillance + Eval Drift Monitor (15 nodes)</text>
+
+  <text x="830" y="905" font-size="9" fill="#475569">1. Schedule trigger (4h)  →  2. Load corpus deltas  →  3. Security signal scanner  →  4. NVD lookup  →  5. CISA fetch</text>
+  <text x="830" y="925" font-size="9" fill="#475569">6. Severity classifier (LLM)  →  7. ATT&amp;CK for ICS mapper  →  8. Gap detector  →  9. Compliance impact</text>
+  <text x="830" y="945" font-size="9" fill="#475569">10. Eval-drift monitor (golden dataset re-score)  →  11. Alert router  →  12. Email/Slack (CRITICAL)</text>
+  <text x="830" y="965" font-size="9" fill="#475569">13. Audit log writer  →  14. Observability metrics push  →  15. Archive node</text>
+
+  <rect x="830" y="985" width="690" height="45" rx="4" fill="#fef3c7" stroke="#b45309"/>
+  <text x="1175" y="1003" text-anchor="middle" font-size="10" font-weight="bold" fill="#78350f">Cybersecurity Hardening</text>
+  <text x="1175" y="1018" text-anchor="middle" font-size="9" fill="#78350f">Scheduled scan + signed alerts + SIEM-ready audit + drift baseline lock + secrets via n8n credentials, never inline</text>
+
+  <!-- Cross-layer arrows -->
+  <line x1="800" y1="190" x2="800" y2="210" stroke="#334155" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="800" y1="290" x2="800" y2="310" stroke="#334155" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="1120" y1="430" x2="1140" y2="430" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow-blue)"/>
+  <line x1="1120" y1="670" x2="1140" y2="670" stroke="#1d4ed8" stroke-width="2" marker-end="url(#arrow-blue)"/>
+  <line x1="800" y1="800" x2="800" y2="820" stroke="#334155" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Eval FAIL -> Human review arrow -->
+  <line x1="220" y1="700" x2="850" y2="465" stroke="#b91c1c" stroke-width="1.5" stroke-dasharray="6,3" marker-end="url(#arrow-red)"/>
+  <text x="600" y="540" font-size="9" fill="#b91c1c" font-style="italic">eval FAIL or confidence&lt;0.60</text>
+
+  <!-- Footer -->
+  <text x="800" y="1085" text-anchor="middle" font-size="10" fill="#64748b">Lamonte Smith · Interview Kickstart · Applied Agentic AI · Week 8 · Milford, MI · 2026</text>
+</svg>
