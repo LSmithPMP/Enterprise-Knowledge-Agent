@@ -232,6 +232,40 @@ def run_pipeline(query: str, user_role: str = "ANALYST") -> dict:
 
     # ── STEP 11: SYNTHESIS ────────────────────────────────────────────────────
     print("Step 11: Synthesizing research response (gpt-4o)...")
+
+    # DETERMINISTIC PROVENANCE — built from actual NVD API responses, not LLM-authored.
+    # This prevents the synthesizer from fabricating verification status to pass eval.
+    nvd_data_list = []
+    if threat_output and hasattr(threat_output, 'nvd_data'):
+        nvd_data_list = threat_output.nvd_data or []
+    verified_cves = []
+    unverified_cves = []
+    cve_labels = {}
+    for entry in nvd_data_list:
+        if not isinstance(entry, dict):
+            continue
+        cve_id = entry.get('cve_id', '')
+        if not cve_id:
+            continue
+        is_verified = bool(entry.get('verified', False))
+        cvss = entry.get('cvss', 0.0)
+        if is_verified and cvss and cvss > 0:
+            cve_labels[cve_id] = f"{cve_id} [VERIFIED — NVD CVSS {cvss}]"
+            verified_cves.append(cve_id)
+        else:
+            cve_labels[cve_id] = f"{cve_id} [UNVERIFIED — corpus-only identifier; not present in NIST NVD; treat as illustrative of the underlying vulnerability class]"
+            unverified_cves.append(cve_id)
+    total = len(verified_cves) + len(unverified_cves)
+    if total == 0:
+        provenance_footer = ""
+    elif len(unverified_cves) == 0:
+        provenance_footer = f" Data provenance: all {total} referenced CVEs verified against live NIST NVD ({', '.join(verified_cves)})."
+    elif len(verified_cves) == 0:
+        provenance_footer = f" Data provenance: 0 of {total} referenced CVEs verified against live NIST NVD; all {total} are illustrative corpus identifiers ({', '.join(unverified_cves)}) used to demonstrate the underlying vulnerability classes. Remediation guidance applies to the classes rather than to specific confirmed CVEs."
+    else:
+        provenance_footer = f" Data provenance: {len(verified_cves)} of {total} referenced CVEs verified against live NIST NVD ({', '.join(verified_cves)}); {len(unverified_cves)} are illustrative corpus identifiers ({', '.join(unverified_cves)})."
+    print(f"  Provenance footer (deterministic): {provenance_footer.strip()[:120]}...")
+
     all_findings = {
         "query": query,
         "classification": classification.model_dump() if hasattr(classification, 'model_dump') else {},
@@ -243,11 +277,26 @@ def run_pipeline(query: str, user_role: str = "ANALYST") -> dict:
         "compliance_assessment": compliance_output.model_dump() if compliance_output else {},
         "citations": citation_output.model_dump() if hasattr(citation_output, 'model_dump') else {},
         "confidence": confidence_result,
+        "PRE_COMPUTED_PROVENANCE_FOOTER": provenance_footer,
+        "PRE_COMPUTED_CVE_LABELS": cve_labels,
     }
     synthesizer = SynthesizerAgent()
     synthesis = synthesizer.run(query, all_findings, user_role)
     all_costs.append(synthesis.cost)
     agents_invoked.append("SynthesizerAgent")
+
+    # PROVENANCE SANITY CHECK — guarantee the footer is honest regardless of LLM behavior.
+    # If the synthesizer omitted, mutated, or contradicted the pre-computed footer,
+    # repair the executive_summary deterministically.
+    if provenance_footer:
+        summary = synthesis.executive_summary or ""
+        if provenance_footer.strip() not in summary:
+            # Strip any LLM-authored "Data provenance" sentence and append the true one
+            import re as _re
+            stripped = _re.sub(r"\s*Data provenance:.*?(?=$|[A-Z])", "", summary, flags=_re.IGNORECASE).rstrip()
+            synthesis.executive_summary = stripped + provenance_footer
+            print("  [PROVENANCE REPAIR] Synthesizer footer replaced with deterministic truth")
+
     print(f"  Synthesis complete | Confidence: {synthesis.confidence:.2f}")
 
     # ── STEP 12: EVALUATION ───────────────────────────────────────────────────

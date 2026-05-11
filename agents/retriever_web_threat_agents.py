@@ -221,18 +221,25 @@ Return JSON with results array, source_urls, search_type, filtered boolean."""
             except Exception:
                 pass
 
-        # Built-in fallback — current AV/OT threat intelligence
+        # Built-in fallback — SYNTHETIC threat intelligence for demonstration
+        # All CVE IDs prefixed with [MOCK] are illustrative and do NOT correspond to
+        # real NVD entries. Real production deployments must use SerpAPI or direct
+        # CISA/NVD integration. This fallback exists only to keep the pipeline
+        # demonstrable when external APIs are unreachable.
         return """
-        CISA ICS-CERT Advisory ICS-24-179-01: Critical vulnerabilities in automotive
-        telematics gateways — buffer overflow via CAN bus interface. CVE-2024-4521.
-        NIST NVD: CVE-2024-5893 — V2X PKI certificate validation bypass in C-V2X
-        implementations using 3GPP Release 15. CVSS score 8.1 (HIGH).
-        MITRE ATT&CK for ICS T0830 updated with new automotive sub-techniques.
-        UNECE WP.29 R155 enforcement began July 2024 for new type approvals.
-        ISO 21434:2021 Amendment 1 published October 2024 — adds AI/ML threat scenarios.
-        Dragos Year in Review 2024: 23% increase in OT-targeted ransomware campaigns.
-        CISA: Nation-state actors targeting automotive Tier-1 suppliers via spearphishing.
-        NVD: CVE-2024-3891 — UDS diagnostic protocol memory exposure in ECU variants.
+        [MOCK-DEMO-DATA — NOT REAL CISA ADVISORIES]
+        [MOCK] Advisory: Illustrative automotive telematics gateway vulnerability —
+        buffer overflow via CAN bus interface. Illustrative ID: [MOCK]CVE-2024-4521.
+        [MOCK] Illustrative V2X PKI certificate validation bypass in C-V2X
+        implementations using 3GPP Release 15. Illustrative ID: [MOCK]CVE-2024-5893.
+        [MOCK] Illustrative UDS diagnostic protocol memory exposure in ECU variants.
+        Illustrative ID: [MOCK]CVE-2024-3891.
+        VERIFIED CONTEXT: MITRE ATT&CK for ICS T0830 (Adversary-in-the-Middle),
+        T0855 (Unauthorized Command Message), and T0886 (Remote Services) are
+        documented techniques relevant to automotive OT environments.
+        VERIFIED CONTEXT: UNECE WP.29 R155 entered enforcement for new type
+        approvals in July 2024. ISO 21434:2021 is the road vehicle cybersecurity
+        engineering standard. NIST SP 800-82 Rev 3 governs ICS security.
         """
 
     def run(self, query: str, search_type: str = "threat_intelligence") -> WebSearchOutput:
@@ -317,6 +324,17 @@ HIGH: CVSS 7.0-8.9 OR authentication bypass OR remote code execution
 MEDIUM: CVSS 4.0-6.9 OR local access required
 LOW: CVSS < 4.0 OR requires physical access
 
+PROVENANCE RULES (CRITICAL — required to prevent hallucination):
+- Every CVE you reference MUST be labeled with its provenance.
+- If the NVD data shows verified=true, label as [VERIFIED — NVD CVSS X.X].
+- If the NVD data shows verified=false, label as [UNVERIFIED — corpus-only identifier; not present in NIST NVD; treat as illustrative].
+- Never report a CVSS score for an unverified CVE. State the score as "n/a (unverified)".
+- If asked to recommend remediation for an unverified CVE, frame recommendations as
+  "applicable to the underlying vulnerability class described in the corpus" rather
+  than as remediation for a specific verified CVE.
+- The phrase [MOCK] in source data is a signal that the identifier is synthetic
+  demonstration data. Treat all [MOCK]-prefixed identifiers as unverified.
+
 FEW-SHOT EXAMPLE 1:
 CVEs: CVE-2024-3891 (UDS memory exposure), CVE-2024-1823 (CAN bus arbitration)
 Output: {"cves_identified": ["CVE-2024-3891", "CVE-2024-1823"], "mitre_techniques": ["T0855", "T0830"], "affected_systems": ["ECU diagnostic interface", "CAN bus arbitration layer"], "severity": "HIGH", "recommendations": ["Deploy UDS authentication wrapper", "Implement CAN bus message signing via AUTOSAR SecOC", "Restrict diagnostic access to authorized tools only"], "nvd_data": [{"cve_id": "CVE-2024-3891", "cvss": 7.8, "description": "UDS protocol memory exposure"}]}
@@ -346,10 +364,10 @@ Return JSON with cves_identified, mitre_techniques, affected_systems, severity, 
                     score = cvss_data.get("cvssData", {}).get("baseScore", 0.0) if isinstance(cvss_data, dict) else 0.0
                     desc = cve_data.get("descriptions", [{}])
                     desc_text = next((d["value"] for d in desc if d.get("lang") == "en"), "No description")
-                    return {"cve_id": cve_id, "cvss": score, "description": desc_text[:300]}
+                    return {"cve_id": cve_id, "cvss": score, "description": desc_text[:300], "verified": True, "source": "NIST NVD"}
         except Exception:
             pass
-        return {"cve_id": cve_id, "cvss": 0.0, "description": "NVD lookup unavailable"}
+        return {"cve_id": cve_id, "cvss": 0.0, "description": "Not found in NVD — likely synthetic/illustrative identifier from internal corpus", "verified": False, "source": "corpus-only"}
 
     def run(self, context: str, cve_ids: list[str] = None) -> ThreatIntelOutput:
         """Extract CVEs, fetch NVD data, map to MITRE ATT&CK for ICS."""
