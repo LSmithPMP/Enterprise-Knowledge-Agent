@@ -85,3 +85,30 @@ and update Workflow 2 to load this file as the comparison anchor.
 ---
 
 *Maintained by Lamonte Smith — Milford, MI*
+
+---
+
+## LOW — Streamlit sidebar agent list shows "1." fourteen times
+
+**Issue.** The 14-agent sidebar list renders every line as "1." because Streamlit
+markdown collapses adjacent ordered-list items into a single list with auto-numbering
+that, when each `st.caption()` is rendered separately, resets per call.
+
+**Fix.** Replace the loop in `dashboard/app.py` sidebar block with a single
+`st.markdown()` containing a hard-coded numbered list, or switch to non-numbered
+captions with the number embedded in the string.
+
+---
+
+## LOW — NVD lookup intermittently returns verified=false
+
+**Issue.** Successive orchestrator runs alternate between "all 3 verified" and
+"0 of 3 verified" for the same CVE identifiers. Root cause is NVD API rate
+limiting and/or transient timeouts in `_lookup_nvd`. The provenance logic is
+working correctly (it accurately reports what NVD returned), but the result
+is non-deterministic across runs.
+
+**Fix.** (a) Add a local cache for NVD lookups keyed by CVE ID with a short TTL,
+(b) implement retry with exponential backoff on NVD timeouts, (c) honor the NVD
+rate limit guidance (5 requests per 30s without API key; 50 per 30s with key) by
+adding a request-pacer in `_lookup_nvd`.
