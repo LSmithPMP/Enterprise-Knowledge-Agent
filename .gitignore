@@ -7,3 +7,8 @@ data/last_run_results.json
 data/query_audit_log.jsonl
 data/observability_log.jsonl
 .DS_Store
+
+# n8n local workflows with substituted secrets — never commit
+n8n/*_local.json
+n8n/workflow_1_local.json
+n8n/workflow_2_local.json

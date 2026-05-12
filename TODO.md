@@ -1,114 +1,93 @@
 # TODO — Enterprise Knowledge Research Agent
 
-Outstanding work items, ordered by priority. Each item describes the issue,
-why it matters, and the proposed fix.
+Tracked work items. Status as of Monday May 11, 2026 evening session.
 
 ---
 
-## HIGH — Corpus / Real-NVD Description Mismatch
+## DONE — Live n8n Deployment (Monday May 11, 2026)
 
-**Discovered:** May 10, 2026 (Week 8 build session)
-**Status:** Open — to address next session
+Both workflows deployed to n8n cloud, end-to-end tested with real LLM calls,
+real external tool calls (NIST NVD, CISA ICS-CERT), real FastAPI integration,
+and full cybersecurity controls active.
 
-**Issue.** The corpus (`data/corpus.json`) embeds CVE identifiers such as
-`CVE-2024-3891`, `CVE-2024-4521`, and `CVE-2024-5893` along with synthetic
-descriptions tailored to the AV/OT cybersecurity domain (e.g. "UDS diagnostic
-protocol memory exposure in ECU variants"). Some of these CVE identifiers
-happen to be real entries in the NIST NVD — but their **real NVD descriptions
-do not match the synthetic corpus descriptions** (for example, `CVE-2024-3891`
-is a real Mattermost server CVE, not an automotive ECU issue).
+**Execution evidence:**
+- W1 (Enterprise Research Pipeline) — 16 nodes, ID#168, version `b5bd99bd`,
+  May 11 21:13:14, succeeded in 16.791s. All 16 nodes active including
+  HMAC Verify (real raw-body signing), API Key Auth, Rate Limiter,
+  Prompt-Injection Filter.
+- W2 (Threat Surveillance + Eval Drift) — 15 nodes, end-to-end green,
+  May 11 ~20:00, succeeded. All four LLM calls succeeded (severity classifier,
+  ATT&CK for ICS mapper, gap detector, compliance impact assessor). CISA
+  ICS-CERT feed returned real advisory data (MAXHUB Pivot Client CVE-2026-6411).
 
-**Why it matters.** The orchestrator's deterministic provenance footer
-(`PATCH 10`) honestly reports that these CVEs are verified against live NVD.
-That report is technically true. However, the synthesizer's body text
-then attributes corpus-authored descriptions to those CVEs, which creates
-a subtle factual misalignment between the verified label and the surrounding
-narrative. The evaluator does not currently catch this because it does not
-cross-check the CVE description against the upstream NVD `description` field.
-
-**Two acceptable fixes (pick one):**
-
-1. **Mock all corpus CVE identifiers explicitly.** Rewrite `data/corpus.json`
-   to use prefix `[MOCK]CVE-XXXX-XXXX` for every fictional CVE. Update
-   `_lookup_nvd` to skip lookups on `[MOCK]`-prefixed identifiers and return
-   `verified: False` immediately with a clear "synthetic demonstration"
-   source field. Update `ThreatIntelAgent` and `SynthesizerAgent` system
-   prompts to enforce the `[MOCK]` convention.
-
-2. **Use real CVEs with their real descriptions.** Rewrite `data/corpus.json`
-   to reference real AV/OT-relevant CVEs sourced from CISA ICS-CERT
-   advisories and NVD, with descriptions copied or summarized from the
-   authoritative source. Cite the source URL on each entry.
-
-**Definition of done.**
-- Corpus rewritten using one of the two approaches above.
-- `python3 orchestrator.py` produces an executive summary where the
-  provenance footer and the body content are consistent (either both
-  honestly labeled `[UNVERIFIED]` or both grounded in real NVD content).
-- Evaluation passes with hallucination_risk ≤ 0.15 and citation
-  coverage ≥ 80%.
-- Commit and push.
+**Engineering deltas captured in committed workflow JSONs:**
+- CISA URL corrected to `/cybersecurity-advisories/ics-advisories.xml`
+- Webhook node configured with `rawBody: true` to enable byte-exact HMAC
+- HMAC Verify reads raw body via `webhookNode.binary.data.data` (n8n v2.x path)
+- API Key Auth reads from webhook payload via `$('1. Webhook — Inbound Query').first().json.body`
+  pattern, robust against upstream transforms
+- HTTP request nodes use `Authorization: Bearer {{ $env.API_KEY }}` header
+- HTTP request bodies use `$('Node Name').first().json.xxx` expression scoping
+  to pull from original webhook payload rather than current-node `$json`
 
 ---
 
-## MEDIUM — `n8n notified: 404` on every run
+## MEDIUM — Rotate API_KEY
 
-**Issue.** The orchestrator's post-pipeline n8n webhook notification returns
-404 because the workflows have not been deployed and activated against a
-publicly reachable n8n endpoint.
+During Monday evening debugging, the API_KEY was visible in plaintext base64
+within an n8n Code-node diagnostic output. While the exposure was scoped to
+the user's own n8n cloud workspace, defense-in-depth requires rotation.
 
-**Fix.** Deploy `n8n/workflow_1_research_pipeline.json` and
-`n8n/workflow_2_threat_surveillance.json` to the n8n cloud instance.
-Configure credentials. Activate workflows. Expose the local FastAPI via
-ngrok or Cloudflare Tunnel so n8n can reach it. Update the orchestrator
-notification URL.
+**Fix.** Generate a fresh 64-character hex API_KEY. Update `.env`. Update
+the n8n Code-node `validKey` constant in W1 node 3. No external service
+calls used the leaked value.
 
 ---
 
-## MEDIUM — Eval-drift baseline not yet established
+## MEDIUM — Corpus / NVD Description Mismatch
 
-**Issue.** Workflow 2 references golden-dataset re-scoring for drift
-detection, but no baseline run has been persisted as the comparison anchor.
+**Issue.** Some corpus CVE identifiers (e.g. `CVE-2024-3891`) happen to be
+real NVD entries but with synthetic AV/OT descriptions in the corpus that
+don't match the real NVD record.
 
-**Fix.** Build a 20-scenario golden dataset (see design doc §5.2), run the
-orchestrator across all 20, persist scores as `data/eval_baseline.jsonl`,
-and update Workflow 2 to load this file as the comparison anchor.
+**Fix.** Rewrite `data/corpus.json` with real NVD-sourced AV/OT CVEs and
+their real descriptions, OR explicitly prefix synthetic identifiers with
+`[MOCK]` and short-circuit `_lookup_nvd` on that prefix.
 
 ---
 
-## LOW — Replace `dashboard/` placeholder with Streamlit UI
+## MEDIUM — Golden-Dataset Baseline
 
-**Issue.** The `dashboard/` directory exists but is empty.
+Workflow 2's drift-detection node calls `/eval/golden-rescore`. The endpoint
+returns a stub today.
 
-**Fix.** Build the Streamlit analyst dashboard described in design doc §2.1.
+**Fix.** Build 20-scenario golden dataset spanning AV, AI/ML, OT, 5G/V2X,
+cybersecurity, and finance domains. Persist as `data/eval_baseline.jsonl`.
+Update endpoint to score each scenario via the orchestrator and persist.
+
+---
+
+## LOW — NVD Lookup Cache + Retry
+
+`ThreatIntelAgent._lookup_nvd` is rate-limited by NVD on repeat lookups
+within a 30-second window. Successive orchestrator runs alternate between
+"all verified" and "0 verified."
+
+**Fix.** Add local cache keyed by CVE ID with 24-hour TTL. Implement retry
+with exponential backoff on NVD timeouts. Honor NVD rate limit guidance
+(5 req/30s without API key; 50 req/30s with).
+
+---
+
+## LOW — Streamlit Sidebar Numbering
+
+The 14-agent sidebar list renders "1." fourteen times due to a Streamlit
+markdown quirk where ordered-list items reset per `st.caption()` call.
+
+**Fix.** Replace the loop with a single `st.markdown()` containing a
+hard-coded numbered list, or embed the number directly in non-numbered
+captions.
 
 ---
 
 *Maintained by Lamonte Smith — Milford, MI*
-
----
-
-## LOW — Streamlit sidebar agent list shows "1." fourteen times
-
-**Issue.** The 14-agent sidebar list renders every line as "1." because Streamlit
-markdown collapses adjacent ordered-list items into a single list with auto-numbering
-that, when each `st.caption()` is rendered separately, resets per call.
-
-**Fix.** Replace the loop in `dashboard/app.py` sidebar block with a single
-`st.markdown()` containing a hard-coded numbered list, or switch to non-numbered
-captions with the number embedded in the string.
-
----
-
-## LOW — NVD lookup intermittently returns verified=false
-
-**Issue.** Successive orchestrator runs alternate between "all 3 verified" and
-"0 of 3 verified" for the same CVE identifiers. Root cause is NVD API rate
-limiting and/or transient timeouts in `_lookup_nvd`. The provenance logic is
-working correctly (it accurately reports what NVD returned), but the result
-is non-deterministic across runs.
-
-**Fix.** (a) Add a local cache for NVD lookups keyed by CVE ID with a short TTL,
-(b) implement retry with exponential backoff on NVD timeouts, (c) honor the NVD
-rate limit guidance (5 requests per 30s without API key; 50 per 30s with key) by
-adding a request-pacer in `_lookup_nvd`.
