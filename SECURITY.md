@@ -74,17 +74,84 @@ Full risk register with 22 entries, NIST SP 800-30 ratings, and MITRE ATLAS / AT
 
 ---
 
+## Operational Status (Live Verification)
+
+As of May 11, 2026, the security controls described above are operational
+in a deployed environment and have been verified by real end-to-end
+execution rather than design review alone.
+
+### Verified Controls
+
+The following controls were exercised during live verification:
+
+- HMAC-SHA256 signature verification over raw request body
+- API key authentication on all sensitive endpoints
+- Per-key rate limiting
+- Prompt-injection pattern filter on inbound queries
+- Role-based access control across analyst, engineer, and executive roles
+- Output redaction of classification markers on the response path
+- Append-only audit logging of all queries and pipeline outcomes
+- Observability metrics emission per execution
+- Live external threat-intelligence calls with verification of returned data
+
+### Operational Evidence
+
+- Workflow 1 (Enterprise Research Pipeline) succeeded end-to-end in 16.791
+  seconds with all sixteen nodes active
+  ([screenshot](docs/W1_execution_succeeded_20260511.png))
+- Workflow 2 (Threat Surveillance + Eval Drift Monitor) succeeded end-to-end
+  in 11.03 seconds with all fifteen nodes active
+  ([screenshot](docs/W2_execution_succeeded_20260511.png))
+- A live external-tool call during verification returned a real, current
+  CISA ICS-CERT advisory, confirming the threat-intelligence integration is
+  not stubbed
+- Engineering refinements applied during verification are version-controlled
+  in the repository's commit history
+
+### Secret Hygiene
+
+Secrets are handled in accordance with industry best practice. No secret
+material is committed to the repository. Local copies of any deployment
+artifacts that contain substituted secrets are excluded from version
+control and protected with restrictive file permissions.
+
+The runtime API key was rotated on May 12, 2026 following a defense-in-depth
+review. Prior key material had been briefly visible in plaintext within a
+debugging diagnostic during HMAC verification work. Exposure was scoped to
+the operator's own workspace, but rotation was performed regardless to
+honor the cybersecurity posture documented in this policy.
+
+### Disclosed Limitations
+
+For transparency:
+
+- The reverse-proxy used during live verification was an ephemeral
+  quick-tunnel, terminated immediately after evidence capture. Tunnel
+  references visible in evidence screenshots are dead and incapable of
+  routing to any origin. Production deployment requires a pre-created
+  named tunnel, a private network connection, or an authenticated
+  reverse-proxy endpoint.
+- One advanced configuration feature on the workflow orchestration
+  platform is tier-gated by the vendor at a level above the operator's
+  current paid plan. As a result, the deployment uses an operator-chosen
+  local substitution pattern that is functionally equivalent for the
+  verification scenarios documented here. The pattern is intentional and
+  documented; it is not the byproduct of an unpaid or unsupported
+  configuration.
+
 ## Reporting a Vulnerability
 
-Email the maintainer directly. Do not open a public issue. Include:
-- A description of the vulnerability.
-- Reproduction steps.
-- The impact you've assessed.
-- Any suggested mitigations.
+Private reports are preferred; public issues are also welcome.
+Reach the maintainer through the GitHub profile
+[@LSmithPMP](https://github.com/LSmithPMP). Reports should include:
 
-Acknowledgement within 48 hours, with a remediation timeline based on severity.
+- A description of the vulnerability
+- Reproduction steps
+- The impact you have assessed
+- Any suggested mitigations
 
----
+Acknowledgment within 48 hours, with a remediation timeline based on severity.
+
 
 ## Compliance Alignment
 
