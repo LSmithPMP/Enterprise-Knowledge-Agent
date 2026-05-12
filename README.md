@@ -108,6 +108,48 @@ Both workflows include HMAC verification, encrypted credential storage (never in
 
 ---
 
+## Live Deployment Evidence
+
+Both workflows are deployed to n8n cloud and have been verified end-to-end with
+real LLM calls, real external tool calls (NIST NVD, CISA ICS-CERT), and real
+FastAPI integration through a Cloudflare quick-tunnel.
+
+**Workflow 1 — Enterprise Research Pipeline**
+
+- Execution ID `#168` · version `b5bd99bd` · May 11, 2026 21:13:14 EST
+- Succeeded in 16.791 seconds
+- All 16 nodes green including HMAC Verify (real raw-body signing via n8n
+  v2.x binary path), API Key Auth, Rate Limiter, Prompt-Injection Filter, and
+  Conditional Router
+- Screenshot: `docs/W1_execution_succeeded_20260511.png`
+
+**Workflow 2 — Autonomous Threat Surveillance + Eval Drift Monitor**
+
+- Execution ID `#169` · version `756ec0c4` · May 11, 2026 21:43:32 EST
+- Succeeded in 11.03 seconds
+- All 15 nodes green including Schedule Trigger, Security Signal Scanner,
+  NVD lookup, CISA ICS-CERT fetch (returned real MAXHUB Pivot Client
+  CVE-2026-6411), Severity Classifier, ATT&CK for ICS Mapper, Gap Detector,
+  Compliance Impact Assessor, Eval-Drift Monitor, and Audit Log Writer
+- Screenshot: `docs/W2_execution_succeeded_20260511.png`
+
+**Engineering deltas captured in committed workflow JSONs** (commit `5a15f3e`):
+
+- CISA ICS-CERT URL corrected to `/cybersecurity-advisories/ics-advisories.xml`
+- Webhook node configured with `rawBody: true` for byte-exact HMAC verification
+- HMAC Verify reads raw body via `webhookNode.binary.data.data` (n8n v2.x path)
+- API Key Auth reads from `$('1. Webhook — Inbound Query').first().json.body`,
+  robust to upstream transforms
+- HTTP request nodes use `Authorization: Bearer {{ $env.API_KEY }}` headers
+- HTTP request bodies use `$('Node Name').first().json.xxx` expression scoping
+  for cross-node data flow
+
+The Cloudflare quick-tunnel used during testing was terminated immediately
+after screenshot capture; tunnel URLs visible in the evidence screenshots are
+dead references (HTTP 530) incapable of routing to any origin. Production
+deployment would use a pre-created named Cloudflare Tunnel, an authenticated
+gateway endpoint, or a private network connection.
+
 ## Repository Structure
 
 ```
