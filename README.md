@@ -121,7 +121,9 @@ FastAPI integration through a Cloudflare quick-tunnel.
 - All 16 nodes green including HMAC Verify (real raw-body signing via n8n
   v2.x binary path), API Key Auth, Rate Limiter, Prompt-Injection Filter, and
   Conditional Router
-- Screenshot: `docs/W1_execution_succeeded_20260511.png`
+- Screenshot evidence:
+
+![Workflow 1 — all 16 nodes succeeded in 16.791s](docs/W1_execution_succeeded_20260511.png)
 
 **Workflow 2 — Autonomous Threat Surveillance + Eval Drift Monitor**
 
@@ -131,7 +133,9 @@ FastAPI integration through a Cloudflare quick-tunnel.
   NVD lookup, CISA ICS-CERT fetch (returned real MAXHUB Pivot Client
   CVE-2026-6411), Severity Classifier, ATT&CK for ICS Mapper, Gap Detector,
   Compliance Impact Assessor, Eval-Drift Monitor, and Audit Log Writer
-- Screenshot: `docs/W2_execution_succeeded_20260511.png`
+- Screenshot evidence:
+
+![Workflow 2 — all 15 nodes succeeded in 11.03s](docs/W2_execution_succeeded_20260511.png)
 
 **Engineering deltas captured in committed workflow JSONs** (commit `5a15f3e`):
 
